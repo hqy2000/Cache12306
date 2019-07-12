@@ -80,6 +80,7 @@ class QueryController extends AbstractController
                         return implode("|", $train);
                     }, $trains_simplify);
                     $cache->set($cacheKey, json_encode($trains_implode));
+                    $cache->expire($cacheKey, 1800);
                     if($debug)
                         return $this->response($trains_simplify, "12306");
                     else
