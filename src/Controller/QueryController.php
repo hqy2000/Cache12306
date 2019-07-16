@@ -70,8 +70,10 @@ class QueryController extends AbstractController
                     $trains_implode = array_map(function ($train) {
                         return implode("|", $train);
                     }, $trains_simplify);
-                    $cache->set($cacheKey, json_encode($trains_implode));
-                    $cache->expire($cacheKey, 1800);
+                    if(count($trains_implode) > 0) {
+                        $cache->set($cacheKey, json_encode($trains_implode));
+                        $cache->expire($cacheKey, 1800);
+                    }
                     if ($debug)
                         return $this->response($trains_simplify, "12306");
                     else
@@ -162,5 +164,80 @@ class QueryController extends AbstractController
         }
     }
 
-
+    /**
+     * @Route("/12306/search", methods="GET")
+     */
+    public function search(Request $request) {
+        $train = $request->query->get("train");
+        $date = $request->query->get("date");
+        $debug = $request->query->getBoolean("debug", false);
+        if(!preg_match('/^([TKDGCLZAY]|[1-7]){1}\d{1,4}$/m', $train))
+            return $this->response("车站代码不正确", null, 400);
+        if(!preg_match('/^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/', $date))
+            return $this->response("日期格式不正确", null, 400);
+        $date = str_replace("-","", $date);
+        $cache = $this->getCache();
+        $cacheKey = "czxx.$train.$date";
+        if ($cache->exists($cacheKey) && !$debug) {
+            $trainNo = $cache->get($cacheKey);
+            return $this->response($trainNo, "cache");
+        } else {
+            try {
+                $client = $this->getClient();
+                $response = $client->request("GET", "https://search.12306.cn/search/v1/train/search?keyword=$train&date=$date");
+                $contents = json_decode($response->getBody()->getContents(), true);
+                if ($contents["status"] === true) {
+                    $trainDetails = $contents["data"];
+                    $trainNo = array_filter($trainDetails, function ($detail) use ($train) {
+                        return $detail["station_train_code"] == $train;
+                    });
+                    if(count($trainNo) > 0)
+                        $trainNo = $trainNo[0]["train_no"];
+                    else
+                        $trainNo = null;
+                    $cache->set($cacheKey, $trainNo);
+                    $cache->expire($cacheKey, 3600);
+                    return $this->response($trainNo, "12306");
+                } else {
+                    return $this->response("服务器错误", null, 400);
+                }
+            } catch (\Exception $exception) {
+                return $this->response($exception->getMessage(), null, 400);
+            }
+        }
+    }
+    /**
+     * @Route("/12306/queryTrainInfo", methods="GET")
+     */
+    public function queryTrainInfo(Request $request) {
+        $train = $request->query->get("train");
+        $date = $request->query->get("date");
+        $debug = $request->query->getBoolean("debug", false);
+        if(!preg_match('/^[a-zA-Z0-9]*$/m', $train))
+            return $this->response("车号不正确", null, 400);
+        if(!preg_match('/^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/', $date))
+            return $this->response("日期格式不正确", null, 400);
+        $cache = $this->getCache();
+        $cacheKey = "queryTrainInfo.$train.$date";
+        if ($cache->exists($cacheKey) && !$debug) {
+            $trainDetails = json_decode($cache->get($cacheKey), true);
+            return $this->response($trainDetails, "cache");
+        } else {
+            try {
+                $client = $this->getClient();
+                $response = $client->request("GET", "https://kyfw.12306.cn/otn/queryTrainInfo/query?leftTicketDTO.train_no=$train&leftTicketDTO.train_date=$date&rand_code=");
+                $contents = json_decode($response->getBody()->getContents(), true);
+                if ($contents["status"] === true && $contents["httpstatus"] == 200) {
+                    $trainDetails = $contents["data"]["data"];
+                    $cache->set($cacheKey, json_encode($trainDetails));
+                    $cache->expire($cacheKey, 1800);
+                    return $this->response($trainDetails, "12306");
+                } else {
+                    return $this->response("服务器错误", null, 400);
+                }
+            } catch (\Exception $exception) {
+                return $this->response($exception->getMessage(), null, 400);
+            }
+        }
+    }
 }
