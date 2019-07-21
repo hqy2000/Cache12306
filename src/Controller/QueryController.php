@@ -172,7 +172,7 @@ class QueryController extends AbstractController
         $date = $request->query->get("date");
         $debug = $request->query->getBoolean("debug", false);
         if(!preg_match('/^([TKDGCLZAY]|[1-7]){1}\d{1,4}$/m', $train))
-            return $this->response("车站代码不正确", null, 400);
+            return $this->response("车次不正确", null, 400);
         if(!preg_match('/^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/', $date))
             return $this->response("日期格式不正确", null, 400);
         $date = str_replace("-","", $date);
@@ -197,7 +197,7 @@ class QueryController extends AbstractController
                         $cache->expire($cacheKey, 3600);
                         return $this->response($trainNo, "12306");
                     } else {
-                        return $this->response("车次不存在", null, 400);
+                        return $this->response("向12306查询车次失败，请重试", null, 400);
                     }
                 } else {
                     return $this->response("服务器错误", null, 400);
