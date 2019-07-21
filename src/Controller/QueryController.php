@@ -191,13 +191,14 @@ class QueryController extends AbstractController
                     $trainNo = array_filter($trainDetails, function ($detail) use ($train) {
                         return $detail["station_train_code"] == $train;
                     });
-                    if(count($trainNo) > 0)
+                    if(count($trainNo) > 0) {
                         $trainNo = $trainNo[0]["train_no"];
-                    else
-                        $trainNo = null;
-                    $cache->set($cacheKey, $trainNo);
-                    $cache->expire($cacheKey, 3600);
-                    return $this->response($trainNo, "12306");
+                        $cache->set($cacheKey, $trainNo);
+                        $cache->expire($cacheKey, 3600);
+                        return $this->response($trainNo, "12306");
+                    } else {
+                        return $this->response("车次不存在", null, 400);
+                    }
                 } else {
                     return $this->response("服务器错误", null, 400);
                 }
