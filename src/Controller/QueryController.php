@@ -43,6 +43,7 @@ class QueryController extends AbstractController
                     usleep(mt_rand(200, 900));
                     $trail ++;
                 }
+                return Response::create( $response->getBody()->getContents());
                 $contents = json_decode($rawContents, true);
                 if ($contents["status"] === true && $contents["httpstatus"] == 200) {
                     $trains = $contents["data"]["result"];
