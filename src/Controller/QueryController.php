@@ -185,7 +185,12 @@ class QueryController extends AbstractController
         } else {
             try {
                 $client = $this->getClient();
-                $response = $client->request("GET", "https://search.12306.cn/search/v1/train/search?keyword=$train&date=$date");
+                if (mb_strlen($train) > 2) {
+                    $queryTrain = mb_substr($train, 0, mb_strlen($train) - 1);
+                } else {
+                    $queryTrain = $train;
+                }
+                $response = $client->request("GET", "https://search.12306.cn/search/v1/train/search?keyword=$queryTrain&date=$date");
                 $contents = json_decode($response->getBody()->getContents(), true);
                 if ($contents["status"] === true) {
                     $trainDetails = $contents["data"];
@@ -200,7 +205,6 @@ class QueryController extends AbstractController
                         $trainNo = $cache->get($cacheKey);
                         return $this->response($trainNo, "12306");
                     } else {
-                        $trainNo = $cache->get($cacheKey);
                         return $this->response("找不到相关信息", null, 400);
                     }
                 } else {
