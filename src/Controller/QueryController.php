@@ -80,7 +80,7 @@ class QueryController extends AbstractController
                         return $this->response($trains_implode, "12306");
 
                 } else {
-                    return $this->response("服务器错误", null, 400);
+                    return $this->response("服务器错误 ".$contents["httpstatus"]."：".$contents["messages"], null, 400);
                 }
             } catch (\Exception $exception) {
                 return $this->response($exception->getMessage(), null, 400);
