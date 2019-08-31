@@ -83,7 +83,7 @@ class QueryController extends AbstractController
                     return $this->response("服务器错误", null, 400);
                 }
             } catch (\Exception $exception) {
-                return $this->response("服务器错误", null, 400);
+                return $this->response($exception->getMessage(), null, 400);
             }
         }
     }
@@ -178,6 +178,7 @@ class QueryController extends AbstractController
         $date = str_replace("-","", $date);
         $cache = $this->getCache();
         $cacheKey = "czxx.$train.$date";
+
         if ($cache->exists($cacheKey) && !$debug) {
             $trainNo = $cache->get($cacheKey);
             return $this->response($trainNo, "cache");
@@ -188,16 +189,19 @@ class QueryController extends AbstractController
                 $contents = json_decode($response->getBody()->getContents(), true);
                 if ($contents["status"] === true) {
                     $trainDetails = $contents["data"];
-                    $trainNo = array_filter($trainDetails, function ($detail) use ($train) {
-                        return $detail["station_train_code"] == $train;
-                    });
-                    if(count($trainNo) > 0) {
-                        $trainNo = $trainNo[0]["train_no"];
-                        $cache->set($cacheKey, $trainNo);
-                        $cache->expire($cacheKey, 3600);
+                    foreach ($trainDetails as $train) {
+                        $trainCode = $train["station_train_code"];
+                        $trainNo = $train["train_no"];
+                        $cacheTempKey = "czxx.$trainCode.$date";
+                        $cache->set($cacheTempKey, $trainNo);
+                        $cache->expire($cacheTempKey, 72000);
+                    }
+                    if ($cache->exists($cacheKey) && !$debug) {
+                        $trainNo = $cache->get($cacheKey);
                         return $this->response($trainNo, "12306");
                     } else {
-                        return $this->response("向12306查询车次失败，请重试", null, 400);
+                        $trainNo = $cache->get($cacheKey);
+                        return $this->response("找不到相关信息", null, 400);
                     }
                 } else {
                     return $this->response("服务器错误", null, 400);
@@ -206,6 +210,10 @@ class QueryController extends AbstractController
                 return $this->response($exception->getMessage(), null, 400);
             }
         }
+
+
+
+
     }
     /**
      * @Route("/12306/queryTrainInfo", methods="GET")
@@ -231,7 +239,7 @@ class QueryController extends AbstractController
                 if ($contents["status"] === true && $contents["httpstatus"] == 200) {
                     $trainDetails = $contents["data"]["data"];
                     $cache->set($cacheKey, json_encode($trainDetails));
-                    $cache->expire($cacheKey, 1800);
+                    $cache->expire($cacheKey, 72000);
                     return $this->response($trainDetails, "12306");
                 } else {
                     return $this->response("服务器错误", null, 400);

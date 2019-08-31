@@ -35,7 +35,8 @@ class AbstractController extends \Symfony\Bundle\FrameworkBundle\Controller\Abst
                 "Accept" => "*/*",
                 "Accept-Encoding" => "",
                 "Accept-Language" => "zh-CN,zh;q=0.8",
-                "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36",
+                "Cookie" => "BIGipServerpool_restapi=2313224714.44838.0000; RAIL_EXPIRATION=1567599402512; RAIL_DEVICEID=L2ifsK_7K-yFLtTTt0dgPdqwobB-S3JwHw3qRhX1EZV56_ug-17LFyB8mvAxen-qZOGQ2RaB9bZ9sCdXakz4TrYT3_z4pFOffrpFkln6DJjZt-ic3yiVVA9gzFfX9-JnW_EJ88sOsNlVm3Y6MxFQ7R1CmhT3AgRl",
+                "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36",
                 "Connection" => "keep-alive",
                 "X-Requested-With" => "XMLHttpRequest",
                 "Referer" => "https://kyfw.12306.cn/otn/leftTicket/init"
