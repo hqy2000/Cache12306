@@ -34,7 +34,7 @@ class QueryController extends AbstractController
         } else {
             try {
                 $client = $this->getClient();
-                $response = $client->request("GET", "https://kyfw.12306.cn/otn/leftTicket/query?leftTicketDTO.train_date=$date&leftTicketDTO.from_station=$from&leftTicketDTO.to_station=$to&purpose_codes=$purpose");
+                $response = $client->request("GET", "https://kyfw.12306.cn/otn/leftTicket/queryT?leftTicketDTO.train_date=$date&leftTicketDTO.from_station=$from&leftTicketDTO.to_station=$to&purpose_codes=$purpose");
                 $rawContents = $response->getBody()->getContents();
                 $contents = json_decode($rawContents, true);
                 if ($contents["status"] === true && $contents["httpstatus"] == 200) {
@@ -206,7 +206,7 @@ class QueryController extends AbstractController
                         $trainNo = $cache->get($cacheKey);
                         return $this->response($trainNo, "12306");
                     } else {
-                        return $this->response("找不到相关信息", null, 400);
+                        return $this->response("车次不正确", null, 400);
                     }
                 } else {
                     return $this->response("服务器错误", null, 400);
