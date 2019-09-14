@@ -34,7 +34,7 @@ class QueryController extends AbstractController
         } else {
             try {
                 $client = $this->getClient();
-                $response = $client->request("GET", "https://kyfw.12306.cn/otn/leftTicket/queryT?leftTicketDTO.train_date=$date&leftTicketDTO.from_station=$from&leftTicketDTO.to_station=$to&purpose_codes=$purpose");
+                $response = $client->request("GET", "https://kyfw.12306.cn/otn/leftTicket/queryA?leftTicketDTO.train_date=$date&leftTicketDTO.from_station=$from&leftTicketDTO.to_station=$to&purpose_codes=$purpose");
                 $rawContents = $response->getBody()->getContents();
                 $contents = json_decode($rawContents, true);
                 if ($contents["status"] === true && $contents["httpstatus"] == 200) {
