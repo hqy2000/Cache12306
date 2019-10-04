@@ -30,15 +30,19 @@ class AbstractController extends \Symfony\Bundle\FrameworkBundle\Controller\Abst
     protected function getClient() {
         $client = new Client([
             'headers' => [
-                "Origin" => "https://kyfw.12306.cn",
-                "Host" => "kyfw.12306.cn",
-                "Accept" => "*/*",
+                "Origin" => "https://www.12306.cn",
+                "Host" => "www.12306.cn",
+                "Accept" => "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3",
                 "Accept-Encoding" => "",
                 "Accept-Language" => "zh-CN,zh;q=0.8",
-                "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36",
+                "Cookie" => "JSESSIONID=F6D275FCDB009686C472D1F4559B6768; BIGipServerkfzmpt=2614690058.64543.0000",
+                "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36",
                 "Connection" => "keep-alive",
                 "X-Requested-With" => "XMLHttpRequest",
-                "Referer" => "https://kyfw.12306.cn/otn/leftTicket/init"
+                "Referer" => "https://www.12306.cn/kfzmpt/lcxxcx/init",
+                "Sec-Fetch-Mode" => "navigate",
+                "Sec-Fetch-Site" => "none",
+                "Sec-Fetch-User" => "?1"
             ]
         ]);
         return $client;
