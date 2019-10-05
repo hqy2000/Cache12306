@@ -49,7 +49,7 @@ class QueryController extends AbstractController
                         else
                             return $this->response($trains, "12306");
                     } else {
-                        return $this->response("没有符合条件的数据", null, 400);
+                        return $this->response("12306返回空数据，可更换其他同城站再试", null, 400);
                     }
                 } else {
                     return $this->response("服务器错误".$response->getBody()->getContents(), null, 400);
