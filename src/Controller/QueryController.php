@@ -76,7 +76,7 @@ class QueryController extends AbstractController
 
         if ($cache->exists($cacheKey) && !$debug) {
             $trainNo = $cache->get($cacheKey);
-            return $this->response($trainNo, "cache");
+            return $this->response(json_decode($trainNo, true), "cache");
         } else {
             try {
                 $client = $this->getClient();
