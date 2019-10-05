@@ -44,10 +44,7 @@ class QueryController extends AbstractController
                         $trains = $contents["data"]["datas"];
                         $cache->set($cacheKey, json_encode($trains));
                         $cache->expire($cacheKey, 1800);
-                        if ($debug)
-                            return $this->response($trains, "12306");
-                        else
-                            return $this->response($trains, "12306");
+                        return $this->response($trains, "12306");
                     } else {
                         return $this->response("12306返回空数据，可更换其他同城站再试", null, 400);
                     }
