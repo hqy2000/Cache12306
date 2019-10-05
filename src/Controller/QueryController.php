@@ -86,7 +86,7 @@ class QueryController extends AbstractController
                         $cache->expire($cacheKey, 72000);
                         return $this->response($trainDetails, "12306");
                     } else {
-                        return $this->response("请稍后再试");
+                        return $this->response("12306返回数据为空，请稍后再试", null, 400);
                     }
                 } else {
                     return $this->response("服务器错误", null, 400);
