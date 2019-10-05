@@ -17,7 +17,7 @@ class DeviceController extends AbstractController
 
     public function version() {
         return $this->response([
-            "station_database" => "2019.07.01",
+            "station_database" => "2019.10.05",
             "train_database" => "2019.02.01",
             "latest_ios" => "1.0.0"
         ]);
